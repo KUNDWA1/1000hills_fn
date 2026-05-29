@@ -1,0 +1,215 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import styles from './AuthModal.module.css';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
+  const [view, setView] = useState('signin');
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'customer' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleChange = (e) => {
+    setError('');
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, password: formData.password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Invalid email or password.');
+        return;
+      }
+      onClose();
+      if (onLoginSuccess) onLoginSuccess({
+        ...data,
+        role: data.role?.toLowerCase(),
+        profileStatus: data.profileStatus?.toLowerCase(),
+      });
+    } catch {
+      setError('Cannot connect to server. Make sure the backend is running.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role.toUpperCase(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Registration failed. Please try again.');
+        return;
+      }
+      setView('success');
+    } catch {
+      setError('Cannot connect to server. Make sure the backend is running.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const switchTo = (v) => {
+    setFormData({ name: '', email: '', password: '', role: 'customer' });
+    setError('');
+    setView(v);
+  };
+
+  const roles = [
+    { value: 'customer', label: 'Customer', icon: '🛒', desc: 'Browse & purchase products' },
+    { value: 'vendor',   label: 'Vendor',   icon: '🏭', desc: 'Sell & manage your products' },
+    { value: 'admin',    label: 'Admin',     icon: '⚙️', desc: 'Manage the platform' },
+  ];
+
+  return createPortal(
+    <div className={styles.overlay} onClick={handleOverlayClick}>
+      <div className={styles.modal}>
+        <button className={styles.closeBtn} onClick={onClose} aria-label="Close">✕</button>
+        <div className={styles.badge}>1H</div>
+
+        {/* ── SUCCESS VIEW ── */}
+        {view === 'success' && (
+          <>
+            <div className={styles.successIcon}>✓</div>
+            <h2 className={styles.title}>Account Created!</h2>
+            <p className={styles.subtitle}>Your account has been created successfully</p>
+            <p className={styles.successMsg}>Welcome to 1000 Hills Engineering! You can now sign in.</p>
+            <button className={styles.primaryBtn} onClick={() => switchTo('signin')}>
+              Go to Sign In
+            </button>
+          </>
+        )}
+
+        {/* ── SIGN IN VIEW ── */}
+        {view === 'signin' && (
+          <>
+            <h2 className={styles.title}>Access Portal</h2>
+            <p className={styles.subtitle}>Sign in with your credentials</p>
+
+            {error && <div className={styles.errorMsg}>{error}</div>}
+
+            <form onSubmit={handleSignIn}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>Email Address</label>
+                <input className={styles.input} type="email" name="email"
+                  value={formData.email} onChange={handleChange}
+                  placeholder="your@email.com" required />
+              </div>
+              <div className={styles.fieldGroup}>
+                <div className={styles.labelRow}>
+                  <label className={styles.label}>Password</label>
+                  <button type="button" className={styles.forgotLink}>Forgot password?</button>
+                </div>
+                <input className={styles.input} type="password" name="password"
+                  value={formData.password} onChange={handleChange}
+                  placeholder="••••••••••" required />
+              </div>
+              <button type="submit" className={styles.primaryBtn} disabled={loading}>
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+
+            <div className={styles.divider}><span>Don&apos;t have an account?</span></div>
+            <button className={styles.secondaryBtn} onClick={() => switchTo('signup')}>
+              Create an Account
+            </button>
+          </>
+        )}
+
+        {/* ── SIGN UP VIEW ── */}
+        {view === 'signup' && (
+          <>
+            <h2 className={styles.title}>Create Account</h2>
+            <p className={styles.subtitle}>Register for a new account</p>
+
+            {error && <div className={styles.errorMsg}>{error}</div>}
+
+            <form onSubmit={handleSignUp}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>Full Name</label>
+                <input className={styles.input} type="text" name="name"
+                  value={formData.name} onChange={handleChange}
+                  placeholder="Your Full Name" required />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>Email Address</label>
+                <input className={styles.input} type="email" name="email"
+                  value={formData.email} onChange={handleChange}
+                  placeholder="your@email.com" required />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>Password</label>
+                <input className={styles.input} type="password" name="password"
+                  value={formData.password} onChange={handleChange}
+                  placeholder="••••••••••" minLength={6} required />
+              </div>
+
+              {/* ── ROLE SELECTOR ── */}
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>I am a</label>
+                <div className={styles.roleGrid}>
+                  {roles.map((r) => (
+                    <label
+                      key={r.value}
+                      className={`${styles.roleCard} ${formData.role === r.value ? styles.roleCardActive : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        name="role"
+                        value={r.value}
+                        checked={formData.role === r.value}
+                        onChange={handleChange}
+                        className={styles.roleRadio}
+                      />
+                      <span className={styles.roleIcon}>{r.icon}</span>
+                      <span className={styles.roleLabel}>{r.label}</span>
+                      <span className={styles.roleDesc}>{r.desc}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <button type="submit" className={styles.primaryBtn} disabled={loading}>
+                {loading ? 'Creating account...' : 'Create Account'}
+              </button>
+            </form>
+
+            <div className={styles.divider}><span>Already have an account?</span></div>
+            <button className={styles.secondaryBtn} onClick={() => switchTo('signin')}>
+              Sign In Instead
+            </button>
+          </>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
