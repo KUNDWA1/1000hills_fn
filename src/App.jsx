@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Navbar from './components/Navbar/Navbar';
 import HomePage from './components/HomePage/HomePage';
 import ProductCard from './components/ProductCard/ProductCard';
@@ -38,31 +38,45 @@ const categoryMeta = {
 };
 
 export default function App() {
-  const [activePage, setActivePage] = useState(() => {
-    try {
-      const u = JSON.parse(sessionStorage.getItem('1h_user'));
-      if (!u) return 'home';
-      const role = u.role?.toLowerCase();
-      if (role === 'admin') return 'admin';
-      if (role === 'vendor') {
-        const s = u.profileStatus?.toLowerCase();
-        if (s === 'approved') return 'vendor';
-        if (s === 'pending') return 'vendor-pending';
-        return 'vendor-setup';
-      }
-      return 'home';
-    } catch { return 'home'; }
-  });
+  const [activePage, setActivePage] = useState('home');
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [authToken, setAuthToken]       = useState(null);
   const [activeCategory, setActiveCategory] = useState('construction-tools');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery]       = useState('');
   const [categorySearch, setCategorySearch] = useState('');
   const [cart, setCart]                     = useState([]);
   const [cartOpen, setCartOpen]             = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(() => {
-    try { return JSON.parse(sessionStorage.getItem('1h_user')) || null; } catch { return null; }
-  });
-  const [authToken, setAuthToken] = useState(sessionStorage.getItem('1h_token') || null);
+
+  // ── Validate session on load ──
+  useEffect(() => {
+    const token = sessionStorage.getItem('1h_token');
+    const user = JSON.parse(sessionStorage.getItem('1h_user') || 'null');
+    if (!token || !user) return;
+    fetch(`${import.meta.env.VITE_API_URL || 'https://one000hills-engineering-bn.onrender.com/api'}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      if (res.ok) {
+        setToken(token);
+        setLoggedInUser(user);
+        setAuthToken(token);
+        const role = user.role?.toLowerCase();
+        if (role === 'admin') setActivePage('admin');
+        else if (role === 'vendor') {
+          const s = user.profileStatus?.toLowerCase();
+          if (s === 'approved') setActivePage('vendor');
+          else if (s === 'pending') setActivePage('vendor-pending');
+          else setActivePage('vendor-setup');
+        }
+      } else {
+        sessionStorage.removeItem('1h_token');
+        sessionStorage.removeItem('1h_user');
+      }
+    }).catch(() => {
+      sessionStorage.removeItem('1h_token');
+      sessionStorage.removeItem('1h_user');
+    });
+  }, []);
 
   // ── Auth helpers ──
   function handleLoginSuccess(user) {
