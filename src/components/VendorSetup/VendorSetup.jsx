@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import styles from './VendorSetup.module.css';
+import { api } from '../../utils/api';
 
 const STEPS = ['Company Info', 'Documents', 'Review & Submit'];
 
@@ -86,20 +87,8 @@ export default function VendorSetup({ user, onSubmitted }) {
       if (docs.nationalId) formData.append('nationalId', docs.nationalId);
       if (docs.companyCertificate) formData.append('companyCertificate', docs.companyCertificate);
 
-      const res = await fetch('http://localhost:8080/api/vendor/profile', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${localStorage.getItem('1h_token')}` },
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || 'Submission failed');
-      }
-
-      // Update stored user profile status
-      const stored = JSON.parse(localStorage.getItem('1h_logged_in') || '{}');
-      localStorage.setItem('1h_logged_in', JSON.stringify({ ...stored, profileStatus: 'pending' }));
+      const res = await api.upload('/vendor/profile', formData);
+      if (!res) throw new Error('Submission failed');
       onSubmitted();
     } catch (err) {
       setSubmitError(err.message);

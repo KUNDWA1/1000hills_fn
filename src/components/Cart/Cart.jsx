@@ -12,7 +12,7 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
   const [loading, setLoading] = useState(false);
 
   const handlePlaceOrder = async () => {
-    if (!loggedInUser || !localStorage.getItem('1h_token')) {
+    if (!loggedInUser) {
       alert('Please sign in to place an order.');
       return;
     }

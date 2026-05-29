@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './VendorPending.module.css';
+import { api } from '../../utils/api';
 
 export default function VendorPending({ user, onLogout, onApproved }) {
   const [status, setStatus] = useState('pending');
@@ -7,17 +8,9 @@ export default function VendorPending({ user, onLogout, onApproved }) {
   useEffect(() => {
     const check = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/vendor/profile/status', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('1h_token')}` },
-        });
-        if (!res.ok) return;
-        const data = await res.json();
+        const data = await api.get('/vendor/profile/status');
         const s = data.profileStatus?.toLowerCase();
-        if (s === 'approved' || s === 'rejected') {
-          setStatus(s);
-          const stored = JSON.parse(localStorage.getItem('1h_logged_in') || '{}');
-          localStorage.setItem('1h_logged_in', JSON.stringify({ ...stored, profileStatus: s }));
-        }
+        if (s === 'approved' || s === 'rejected') setStatus(s);
       } catch { /* backend not reachable, keep polling */ }
     };
     check();
