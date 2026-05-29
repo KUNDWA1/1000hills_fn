@@ -278,3 +278,52 @@
   margin-bottom: 24px;
   line-height: 1.6;
 }
+
+/* ── TERMS CHECKBOX ── */
+.termsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.termsCheck { width: 16px; height: 16px; cursor: pointer; accent-color: #c9a84c; flex-shrink: 0; }
+.termsLabel { font-family: 'Barlow', sans-serif; font-size: 13px; color: #555; }
+.termsLink {
+  background: none; border: none; color: #c9a84c; cursor: pointer;
+  font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 600;
+  padding: 0; text-decoration: underline;
+}
+
+/* ── TERMS MODAL ── */
+.termsOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center; z-index: 1100;
+}
+.termsModal {
+  background: #f5f2ed; border-radius: 16px; width: 560px; max-width: 94vw;
+  max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.termsHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px 16px; border-bottom: 1px solid #ddd;
+}
+.termsTitle {
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: #111; margin: 0;
+}
+.termsBody {
+  overflow-y: auto; padding: 20px 24px; flex: 1;
+  font-family: 'Barlow', sans-serif; font-size: 13.5px; color: #444; line-height: 1.7;
+}
+.termsBody h3 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px;
+  color: #111; margin: 20px 0 6px;
+}
+.termsBody ul { padding-left: 18px; margin: 4px 0 10px; }
+.termsBody li { margin-bottom: 4px; }
+.termsBody p { margin: 6px 0; }
+.termsDate { font-size: 11px; color: #999; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.termsContact { margin-top: 20px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 13px; color: #666; }
+.termsFooter {
+  display: flex; gap: 12px; padding: 16px 24px;
+  border-top: 1px solid #ddd;
+}
