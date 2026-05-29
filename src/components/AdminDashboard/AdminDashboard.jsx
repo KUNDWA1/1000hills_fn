@@ -143,7 +143,7 @@ export default function AdminDashboard({ user, onLogout }) {
   const handleConfirmAssign = async () => {
     const vendor = allVendors.find(v => v.id === assignForm.vendorId);
     if (!vendor || !assignForm.deliveryDate) return;
-    await api.patch(`/admin/orders/${selectedOrder.id}/assign`, {
+    await api.patch(`/admin/orders/${encodeURIComponent(selectedOrder.id)}/assign`, {
       vendorId: vendor.id,
       deliveryDate: assignForm.deliveryDate,
       description: assignForm.description,
@@ -908,7 +908,7 @@ export default function AdminDashboard({ user, onLogout }) {
                       <button
                         key={nextStep}
                         onClick={async () => {
-                          await api.patch(`/admin/orders/${o.id}/status`, { status: nextStep });
+                          await api.patch(`/admin/orders/${encodeURIComponent(o.id)}/status`, { status: nextStep });
                           await fetchOrders();
                           const updated = customerOrders.find(x => x.id === o.id);
                           setTrackOrder({ order: { ...o, status: nextStep }, steps: TRACK_STEPS });
