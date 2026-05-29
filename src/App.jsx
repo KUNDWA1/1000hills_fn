@@ -38,21 +38,38 @@ const categoryMeta = {
 };
 
 export default function App() {
-  const [activePage, setActivePage] = useState('home');
+  const [activePage, setActivePage] = useState(() => {
+    try {
+      const u = JSON.parse(sessionStorage.getItem('1h_user'));
+      if (!u) return 'home';
+      const role = u.role?.toLowerCase();
+      if (role === 'admin') return 'admin';
+      if (role === 'vendor') {
+        const s = u.profileStatus?.toLowerCase();
+        if (s === 'approved') return 'vendor';
+        if (s === 'pending') return 'vendor-pending';
+        return 'vendor-setup';
+      }
+      return 'home';
+    } catch { return 'home'; }
+  });
   const [activeCategory, setActiveCategory] = useState('construction-tools');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery]       = useState('');
   const [categorySearch, setCategorySearch] = useState('');
   const [cart, setCart]                     = useState([]);
   const [cartOpen, setCartOpen]             = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  const [authToken, setAuthToken]       = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem('1h_user')) || null; } catch { return null; }
+  });
+  const [authToken, setAuthToken] = useState(sessionStorage.getItem('1h_token') || null);
 
   // ── Auth helpers ──
   function handleLoginSuccess(user) {
     setLoggedInUser(user);
     setAuthToken(user.token);
     setToken(user.token);
+    sessionStorage.setItem('1h_user', JSON.stringify(user));
     const role = user?.role || 'customer';
     if (role === 'vendor') {
       const status = user?.profileStatus || 'none';
@@ -75,6 +92,7 @@ export default function App() {
     setLoggedInUser(null);
     setAuthToken(null);
     clearToken();
+    sessionStorage.removeItem('1h_user');
     setActivePage('home');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

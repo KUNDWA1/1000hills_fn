@@ -1,8 +1,8 @@
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-let _token = null;
-export function setToken(t) { _token = t; }
-export function clearToken() { _token = null; }
+let _token = sessionStorage.getItem('1h_token') || null;
+export function setToken(t) { _token = t; sessionStorage.setItem('1h_token', t); }
+export function clearToken() { _token = null; sessionStorage.removeItem('1h_token'); }
 
 function headers(isFormData = false) {
   const h = {};
