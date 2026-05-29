@@ -1,0 +1,76 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+.trigger:hover { background: rgba(255,255,255,0.08); }
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  min-width: 140px;
+  box-shadow: var(--shadow-md);
+  z-index: 300;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.heading {
+  font-family: 'Barlow', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 4px 8px 8px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.option:hover { background: var(--surface-2); }
+.active { background: var(--surface-2); }
+
+.optionIcon { font-size: 15px; }
+.optionLabel {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13.5px;
+  color: var(--text);
+  flex: 1;
+  text-align: left;
+}
+.dot {
+  color: var(--accent);
+  font-size: 10px;
+}

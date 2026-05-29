@@ -5,6 +5,8 @@ import { generatorsProducts } from '../../data/Generators & Power_products';
 import { securityProducts } from '../../data/Security & IT_products';
 import { solarProducts } from '../../data/Solar & Energy_products';
 import AuthModal from '../Auth/AuthModal';
+import useTheme from '../../utils/useTheme';
+import ThemeSelector from './ThemeSelector';
 
 const categories = [
   { key: 'construction-tools', label: 'Construction Tools', products: constructionToolsProducts },
@@ -16,6 +18,7 @@ const categories = [
 export default function Navbar({ activePage, activeCategory, onCategoryChange, onGoHome, cartCount, onCartOpen, onSearch, onLoginSuccess, authOpen, onAuthClose }) {
   const [inputVal, setInputVal] = useState('');
   const [localAuthOpen, setLocalAuthOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const isAuthOpen = authOpen || localAuthOpen;
   const handleAuthClose = () => { setLocalAuthOpen(false); if (onAuthClose) onAuthClose(); };
@@ -59,6 +62,9 @@ export default function Navbar({ activePage, activeCategory, onCategoryChange, o
               />
               <button className={styles.searchBtn} onClick={handleSearch}>SEARCH</button>
             </div>
+
+            {/* Theme selector */}
+            <ThemeSelector theme={theme} setTheme={setTheme} />
 
             {/* Account button → opens AuthModal */}
             <button
