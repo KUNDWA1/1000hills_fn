@@ -225,16 +225,16 @@ export default function AdminDashboard({ user, onLogout }) {
             <span className={styles.breadcrumb}>Admin Panel / {navItems.find((n) => n.id === activeTab)?.label}</span>
           </div>
           <div className={styles.topbarRight}>
-            <div className={styles.searchBar}>
-              <span>🔍</span>
-              <input placeholder="Search anything..." className={styles.topSearch} />
-            </div>
             <div className={styles.notifBtn}>🔔 <span className={styles.notifDot} /></div>
             <div className={styles.topbarAvatar}>{user?.name ? user.name.slice(0, 2).toUpperCase() : 'AD'}</div>
           </div>
         </header>
 
         <div className={styles.content}>
+          <div className={styles.searchBar} style={{ marginBottom: 20 }}>
+            <span>🔍</span>
+            <input placeholder="Search anything..." className={styles.topSearch} />
+          </div>
 
           {/* ── TOASTS ── */}
           {actionDone && (
