@@ -13,9 +13,12 @@ const categories = [
   { key: 'solar-energy', label: 'Solar & Energy', products: solarProducts },
 ];
 
-export default function Navbar({ activePage, activeCategory, onCategoryChange, onGoHome, cartCount, onCartOpen, onSearch, onLoginSuccess }) {
+export default function Navbar({ activePage, activeCategory, onCategoryChange, onGoHome, cartCount, onCartOpen, onSearch, onLoginSuccess, authOpen, onAuthClose }) {
   const [inputVal, setInputVal] = useState('');
-  const [authOpen, setAuthOpen] = useState(false);   // ← NEW
+  const [localAuthOpen, setLocalAuthOpen] = useState(false);
+
+  const isAuthOpen = authOpen || localAuthOpen;
+  const handleAuthClose = () => { setLocalAuthOpen(false); if (onAuthClose) onAuthClose(); };
 
   function handleSearch() {
     if (inputVal.trim()) onSearch(inputVal.trim());
@@ -61,7 +64,7 @@ export default function Navbar({ activePage, activeCategory, onCategoryChange, o
             <button
               className={styles.iconBtn}
               title="Account"
-              onClick={() => setAuthOpen(true)}   // ← NEW
+              onClick={() => setLocalAuthOpen(true)}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
@@ -105,7 +108,7 @@ export default function Navbar({ activePage, activeCategory, onCategoryChange, o
       </div>
 
       {/* ── AUTH MODAL ── */}
-      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} onLoginSuccess={onLoginSuccess} />   {/* ← NEW */}
+      <AuthModal isOpen={isAuthOpen} onClose={handleAuthClose} onLoginSuccess={onLoginSuccess} />
 
     </header>
   );

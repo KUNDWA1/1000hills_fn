@@ -6,14 +6,14 @@ function formatPrice(n) {
   return 'RWF ' + n.toLocaleString();
 }
 
-export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, loggedInUser }) {
+export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, loggedInUser, onOpenAuth }) {
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const count = items.reduce((s, i) => s + i.qty, 0);
   const [loading, setLoading] = useState(false);
 
   const handlePlaceOrder = async () => {
     if (!loggedInUser) {
-      alert('Please sign in to place an order.');
+      onOpenAuth();
       return;
     }
     setLoading(true);

@@ -47,6 +47,7 @@ export default function App() {
   const [categorySearch, setCategorySearch] = useState('');
   const [cart, setCart]                     = useState([]);
   const [cartOpen, setCartOpen]             = useState(false);
+  const [authOpen, setAuthOpen]             = useState(false);
 
   // ── Validate session on load ──
   useEffect(() => {
@@ -224,6 +225,8 @@ export default function App() {
         onCartOpen={() => setCartOpen(true)}
         onSearch={goSearch}
         onLoginSuccess={handleLoginSuccess}
+        authOpen={authOpen}
+        onAuthClose={() => setAuthOpen(false)}
       />
 
       {/* ── WELCOME PAGE ── */}
@@ -320,6 +323,10 @@ export default function App() {
         onRemove={removeFromCart}
         onUpdateQty={updateQty}
         loggedInUser={loggedInUser}
+        onOpenAuth={() => {
+          setCartOpen(false);
+          setAuthOpen(true);
+        }}
       />
     </div>
   );
