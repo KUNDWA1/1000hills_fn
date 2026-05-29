@@ -147,7 +147,11 @@ export default function AdminDashboard({ user, onLogout }) {
       vendorId: vendor.id,
       deliveryDate: assignForm.deliveryDate,
       description: assignForm.description,
-      products: assignForm.products,
+      products: assignForm.products.map(p => ({
+        productName: p.name,
+        qty: Number(p.qty),
+        unitPrice: Number(p.unitPrice),
+      })),
     });
     setAssignModal(false);
     setAssignSuccess(`Order ${selectedOrder.id} assigned to ${vendor.companyName || vendor.name}`);
