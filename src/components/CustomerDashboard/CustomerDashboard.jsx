@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../utils/api';
 import styles from './CustomerDashboard.module.css';
+import { useLang } from '../../utils/LangContext';
 
 const STATUS_COLOR = {
   PENDING: '#f59e0b', ASSIGNED: '#3b82f6', PROCESSING: '#a855f7',
   OUT_FOR_DELIVERY: '#06b6d4', DELIVERED: '#22c55e',
 };
 const STATUS_STEPS = ['PENDING', 'ASSIGNED', 'PROCESSING', 'OUT_FOR_DELIVERY', 'DELIVERED'];
-const STATUS_LABEL = {
-  PENDING: 'Pending', ASSIGNED: 'Assigned', PROCESSING: 'Processing',
-  OUT_FOR_DELIVERY: 'Out for Delivery', DELIVERED: 'Delivered',
-};
 
 export default function CustomerDashboard({ user, onGoHome, onLogout, initialToast }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -22,6 +19,13 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
   const [toast, setToast] = useState(initialToast || null);
   const [orderSearch, setOrderSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const { t } = useLang();
+  const cd = t.cd;
+
+  const STATUS_LABEL = {
+    PENDING: cd.pending, ASSIGNED: cd.assigned, PROCESSING: cd.processing,
+    OUT_FOR_DELIVERY: cd.outForDelivery, DELIVERED: cd.delivered,
+  };
 
   useEffect(() => {
     api.get('/orders/mine').then(setOrders).catch(() => {});
@@ -52,9 +56,9 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
         total: order.total,
       });
       await api.get('/orders/mine').then(setOrders);
-      showToast('Order placed successfully! Admin will assign a vendor.', 'success');
+      showToast(cd.reorderSuccess, 'success');
     } catch (e) {
-      showToast('Failed to reorder: ' + e.message, 'error');
+      showToast(cd.reorderFail + e.message, 'error');
     }
   };
 
@@ -70,10 +74,10 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
   });
 
   const navItems = [
-    { id: 'overview', label: 'Overview', icon: '⊞' },
-    { id: 'orders', label: 'My Orders', icon: '📦', badge: activeOrders.length || null },
-    { id: 'track', label: 'Track Order', icon: '🚚' },
-    { id: 'profile', label: 'My Profile', icon: '👤' },
+    { id: 'overview', label: cd.overview, icon: '⊞' },
+    { id: 'orders',   label: cd.orders,   icon: '📦', badge: activeOrders.length || null },
+    { id: 'track',    label: cd.track,    icon: '🚚' },
+    { id: 'profile',  label: cd.profile,  icon: '👤' },
   ];
 
   return (
@@ -95,7 +99,7 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
           {sidebarOpen && (
             <div className={styles.userMeta}>
               <p className={styles.userName}>{user?.name || 'Customer'}</p>
-              <span className={styles.userRole}>Customer</span>
+              <span className={styles.userRole}>{cd.profile}</span>
             </div>
           )}
         </div>
@@ -121,11 +125,11 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
         <div className={styles.sidebarFooter}>
           <button className={styles.shopBtn} onClick={onGoHome}>
             <span>🛍</span>
-            {sidebarOpen && <span>Shop Now</span>}
+            {sidebarOpen && <span>{cd.shopNow}</span>}
           </button>
           <button className={styles.logoutBtn} onClick={onLogout}>
             <span>⎋</span>
-            {sidebarOpen && <span>Sign Out</span>}
+            {sidebarOpen && <span>{cd.signOut}</span>}
           </button>
         </div>
       </aside>
@@ -138,10 +142,10 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
               {navItems.find(n => n.id === activeTab)?.label}
             </h1>
             <p className={styles.pageSub}>
-              {activeTab === 'overview' && `Welcome back, ${user?.name || 'there'}`}
-              {activeTab === 'orders' && `${orders.length} total order${orders.length !== 1 ? 's' : ''}`}
-              {activeTab === 'track' && 'Real-time order tracking'}
-              {activeTab === 'profile' && 'Manage your account details'}
+              {activeTab === 'overview' && cd.welcomeBack(user?.name || 'there')}
+              {activeTab === 'orders' && cd.totalOrdersSub(orders.length)}
+              {activeTab === 'track' && cd.trackingTitle}
+              {activeTab === 'profile' && cd.manageAccount}
             </p>
           </div>
         </div>
@@ -151,12 +155,12 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
           <div className={styles.tabContent}>
             <div className={styles.statsRow}>
               {[
-                { label: 'Total Orders', value: orders.length, icon: '📦', color: '#3b82f6' },
-                { label: 'Active Orders', value: activeOrders.length, icon: '🚚', color: '#f59e0b' },
-                { label: 'Delivered', value: deliveredOrders.length, icon: '✅', color: '#22c55e' },
-                { label: 'Total Spent', value: `RWF ${totalSpent.toLocaleString()}`, icon: '💰', color: '#a855f7' },
+                { label: cd.totalOrders, value: orders.length, icon: '📦', color: '#3b82f6' },
+                { label: cd.activeOrders, value: activeOrders.length, icon: '🚚', color: '#f59e0b' },
+                { label: cd.delivered, value: deliveredOrders.length, icon: '✅', color: '#22c55e' },
+                { label: cd.totalSpent, value: `RWF ${totalSpent.toLocaleString()}`, icon: '💰', color: '#a855f7' },
               ].map((s, i) => (
-                <div className={styles.statCard} key={i} style={{ '--accent': s.color }}>
+                <div className={styles.statCard} key={i}>
                   <div className={styles.statIcon} style={{ background: s.color + '18', color: s.color }}>{s.icon}</div>
                   <div>
                     <p className={styles.statValue}>{s.value}</p>
@@ -169,14 +173,14 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
             {/* Recent Orders */}
             <div className={styles.card}>
               <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>Recent Orders</h2>
-                <button className={styles.viewAllBtn} onClick={() => setActiveTab('orders')}>View All →</button>
+                <h2 className={styles.cardTitle}>{cd.recentOrders}</h2>
+                <button className={styles.viewAllBtn} onClick={() => setActiveTab('orders')}>{cd.viewAll}</button>
               </div>
               {orders.length === 0 ? (
                 <div className={styles.emptyState}>
                   <span className={styles.emptyIcon}>📦</span>
-                  <p>No orders yet. Start shopping!</p>
-                  <button className={styles.primaryBtn} onClick={onGoHome}>Browse Products</button>
+                  <p>{cd.noOrders}</p>
+                  <button className={styles.primaryBtn} onClick={onGoHome}>{cd.browseProducts}</button>
                 </div>
               ) : (
                 <div className={styles.orderList}>
@@ -205,27 +209,24 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
 
             {/* Quick Actions */}
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Quick Actions</h2>
+              <h2 className={styles.cardTitle}>{cd.quickActions}</h2>
               <div className={styles.quickActions}>
                 <button className={styles.qaBtn} onClick={onGoHome}>
                   <span className={styles.qaIcon}>🛍</span>
-                  <span>Browse Catalogue</span>
+                  <span>{cd.browseCatalogue}</span>
                 </button>
                 <button className={styles.qaBtn} onClick={() => setActiveTab('track')}>
                   <span className={styles.qaIcon}>🚚</span>
-                  <span>Track Orders</span>
+                  <span>{cd.trackOrders}</span>
                 </button>
                 <button className={styles.qaBtn} onClick={() => setActiveTab('profile')}>
                   <span className={styles.qaIcon}>👤</span>
-                  <span>Edit Profile</span>
+                  <span>{cd.editProfile}</span>
                 </button>
                 {deliveredOrders.length > 0 && (
-                  <button className={styles.qaBtn} onClick={() => {
-                    setSelectedOrder(deliveredOrders[0]);
-                    setActiveTab('orders');
-                  }}>
+                  <button className={styles.qaBtn} onClick={() => { setSelectedOrder(deliveredOrders[0]); setActiveTab('orders'); }}>
                     <span className={styles.qaIcon}>🔁</span>
-                    <span>Reorder Last</span>
+                    <span>{cd.reorderLast}</span>
                   </button>
                 )}
               </div>
@@ -239,12 +240,12 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
             <div className={styles.tabActions}>
               <input
                 className={styles.searchInput}
-                placeholder="🔍  Search orders or products..."
+                placeholder={cd.searchOrders}
                 value={orderSearch}
                 onChange={e => setOrderSearch(e.target.value)}
               />
               <select className={styles.filterSelect} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                <option value="All">All Statuses</option>
+                <option value="All">{cd.allStatuses}</option>
                 {STATUS_STEPS.map(s => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
               </select>
             </div>
@@ -252,22 +253,22 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
               {filteredOrders.length === 0 ? (
                 <div className={styles.emptyState}>
                   <span className={styles.emptyIcon}>📦</span>
-                  <p>{orders.length === 0 ? 'No orders yet.' : 'No orders match your search.'}</p>
-                  {orders.length === 0 && <button className={styles.primaryBtn} onClick={onGoHome}>Start Shopping</button>}
+                  <p>{orders.length === 0 ? cd.noOrdersYet : cd.noMatch}</p>
+                  {orders.length === 0 && <button className={styles.primaryBtn} onClick={onGoHome}>{cd.startShopping}</button>}
                 </div>
               ) : (
                 <div className={styles.tableWrap}>
                   <table className={styles.table}>
                     <thead>
                       <tr>
-                        <th>Order ID</th>
-                        <th>Items</th>
-                        <th>Total (RWF)</th>
-                        <th>Vendor</th>
-                        <th>Delivery By</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Actions</th>
+                        <th>{cd.orderId}</th>
+                        <th>{cd.items}</th>
+                        <th>{cd.totalRwf}</th>
+                        <th>{cd.vendor}</th>
+                        <th>{cd.deliveryBy}</th>
+                        <th>{cd.status}</th>
+                        <th>{cd.date}</th>
+                        <th>{cd.actions}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -278,7 +279,7 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
                             {o.items?.map(i => `${i.productName || i.name} x${i.qty}`).join(', ')}
                           </td>
                           <td className={styles.amount}>{o.total?.toLocaleString()}</td>
-                          <td>{o.vendorName || <span style={{ color: '#b8b4ae', fontSize: 12 }}>Not assigned</span>}</td>
+                          <td>{o.vendorName || <span style={{ color: '#b8b4ae', fontSize: 12 }}>{cd.notAssigned}</span>}</td>
                           <td style={{ fontSize: 12, color: '#8a8680' }}>{o.deliveryDate || '—'}</td>
                           <td>
                             <span className={styles.statusPill} style={{
@@ -291,11 +292,11 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
                           </td>
                           <td className={styles.actionsCell}>
                             <button className={styles.viewBtn} onClick={() => { setSelectedOrder(o); setActiveTab('track'); }}>
-                              👁 Track
+                              {cd.trackBtn}
                             </button>
                             {o.status === 'DELIVERED' && (
                               <button className={styles.reorderBtn} onClick={() => handleReorder(o)}>
-                                🔁 Reorder
+                                {cd.reorderBtn}
                               </button>
                             )}
                           </td>
@@ -314,12 +315,12 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
           <div className={styles.tabContent}>
             {!selectedOrder ? (
               <div className={styles.card}>
-                <h2 className={styles.cardTitle} style={{ marginBottom: 16 }}>Select an order to track</h2>
+                <h2 className={styles.cardTitle} style={{ marginBottom: 16 }}>{cd.selectOrder}</h2>
                 {orders.length === 0 ? (
                   <div className={styles.emptyState}>
                     <span className={styles.emptyIcon}>🚚</span>
-                    <p>No orders to track yet.</p>
-                    <button className={styles.primaryBtn} onClick={onGoHome}>Start Shopping</button>
+                    <p>{cd.noOrdersTrack}</p>
+                    <button className={styles.primaryBtn} onClick={onGoHome}>{cd.startShopping}</button>
                   </div>
                 ) : (
                   <div className={styles.orderList}>
@@ -347,10 +348,10 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
             ) : (
               <div className={styles.trackCard}>
                 <div className={styles.trackHeader}>
-                  <button className={styles.backBtn} onClick={() => setSelectedOrder(null)}>← Back</button>
+                  <button className={styles.backBtn} onClick={() => setSelectedOrder(null)}>{cd.back}</button>
                   <div>
                     <h2 className={styles.trackOrderId}>{selectedOrder.id}</h2>
-                    <p className={styles.trackDate}>Placed: {selectedOrder.placedAt ? new Date(selectedOrder.placedAt).toLocaleDateString() : '—'}</p>
+                    <p className={styles.trackDate}>{cd.placed} {selectedOrder.placedAt ? new Date(selectedOrder.placedAt).toLocaleDateString() : '—'}</p>
                   </div>
                   <span className={styles.statusPill} style={{
                     background: (STATUS_COLOR[selectedOrder.status] || '#f59e0b') + '22',
@@ -391,25 +392,25 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
                 <div className={styles.trackInfoGrid}>
                   {selectedOrder.vendorName && (
                     <div className={styles.infoBlock}>
-                      <p className={styles.infoLabel}>Assigned Vendor</p>
+                      <p className={styles.infoLabel}>{cd.assignedVendor}</p>
                       <p className={styles.infoValue}>{selectedOrder.vendorName}</p>
                     </div>
                   )}
                   {selectedOrder.deliveryDate && (
                     <div className={styles.infoBlock}>
-                      <p className={styles.infoLabel}>Expected Delivery</p>
+                      <p className={styles.infoLabel}>{cd.expectedDelivery}</p>
                       <p className={styles.infoValue}>{selectedOrder.deliveryDate}</p>
                     </div>
                   )}
                   <div className={styles.infoBlock}>
-                    <p className={styles.infoLabel}>Order Total</p>
+                    <p className={styles.infoLabel}>{cd.orderTotal}</p>
                     <p className={styles.infoValue} style={{ color: '#22c55e' }}>RWF {selectedOrder.total?.toLocaleString()}</p>
                   </div>
                 </div>
 
                 {/* Items */}
                 <div className={styles.trackItems}>
-                  <p className={styles.trackItemsTitle}>Items</p>
+                  <p className={styles.trackItemsTitle}>{cd.items}</p>
                   {selectedOrder.items?.map((item, i) => (
                     <div key={i} className={styles.trackItem}>
                       <span className={styles.trackItemName}>{item.productName || item.name}</span>
@@ -421,7 +422,7 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
 
                 {selectedOrder.status === 'DELIVERED' && (
                   <button className={styles.reorderLargeBtn} onClick={() => handleReorder(selectedOrder)}>
-                    🔁 Reorder This
+                    {cd.reorderThis}
                   </button>
                 )}
               </div>
@@ -434,9 +435,9 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
           <div className={styles.tabContent}>
             <div className={styles.card} style={{ maxWidth: 560 }}>
               <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>Account Details</h2>
+                <h2 className={styles.cardTitle}>{cd.accountDetails}</h2>
                 {!profileEdit && (
-                  <button className={styles.editBtn2} onClick={() => setProfileEdit(true)}>✎ Edit</button>
+                  <button className={styles.editBtn2} onClick={() => setProfileEdit(true)}>{cd.editBtn}</button>
                 )}
               </div>
 
@@ -445,39 +446,36 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
                 <div>
                   <p className={styles.profileName}>{user?.name || 'Customer'}</p>
                   <p className={styles.profileEmail}>{user?.email}</p>
-                  <span className={styles.profileBadge}>Customer Account</span>
+                  <span className={styles.profileBadge}>{cd.customerAccount}</span>
                 </div>
               </div>
 
               {profileEdit ? (
                 <div className={styles.profileForm}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Full Name</label>
+                    <label className={styles.formLabel}>{cd.fullName}</label>
                     <input className={styles.formInput} value={profileForm.name} onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))} />
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Phone Number</label>
-                    <input className={styles.formInput} placeholder="+250 7XX XXX XXX" value={profileForm.phone} onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))} />
+                    <label className={styles.formLabel}>{cd.phone}</label>
+                    <input className={styles.formInput} placeholder={cd.phonePlaceholder} value={profileForm.phone} onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))} />
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Delivery Address</label>
-                    <input className={styles.formInput} placeholder="e.g. Kigali, Gasabo, KG 5 Ave" value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
+                    <label className={styles.formLabel}>{cd.address}</label>
+                    <input className={styles.formInput} placeholder={cd.addressPlaceholder} value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
                   </div>
                   <div className={styles.formActions}>
-                    <button className={styles.cancelBtn} onClick={() => setProfileEdit(false)}>Cancel</button>
-                    <button className={styles.primaryBtn} onClick={() => {
-                      setProfileEdit(false);
-                      showToast('Profile updated!');
-                    }}>Save Changes</button>
+                    <button className={styles.cancelBtn} onClick={() => setProfileEdit(false)}>{cd.cancel}</button>
+                    <button className={styles.primaryBtn} onClick={() => { setProfileEdit(false); showToast(cd.profileUpdated); }}>{cd.saveChanges}</button>
                   </div>
                 </div>
               ) : (
                 <div className={styles.profileDetails}>
                   {[
-                    ['Email', user?.email],
-                    ['Phone', profileForm.phone || 'Not set'],
-                    ['Address', profileForm.address || 'Not set'],
-                    ['Member Since', user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'],
+                    [cd.emailLbl, user?.email],
+                    [cd.phoneLbl, profileForm.phone || cd.notSet],
+                    [cd.addressLbl, profileForm.address || cd.notSet],
+                    [cd.memberSince, user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'],
                   ].map(([label, val]) => (
                     <div key={label} className={styles.detailRow}>
                       <span className={styles.detailLabel}>{label}</span>
@@ -490,19 +488,19 @@ export default function CustomerDashboard({ user, onGoHome, onLogout, initialToa
 
             {/* Order summary */}
             <div className={styles.card} style={{ maxWidth: 560, marginTop: 16 }}>
-              <h2 className={styles.cardTitle}>Order Summary</h2>
+              <h2 className={styles.cardTitle}>{cd.orderSummary}</h2>
               <div className={styles.profileStats}>
                 <div className={styles.profileStat}>
                   <p className={styles.profileStatValue}>{orders.length}</p>
-                  <p className={styles.profileStatLabel}>Total Orders</p>
+                  <p className={styles.profileStatLabel}>{cd.totalOrders}</p>
                 </div>
                 <div className={styles.profileStat}>
                   <p className={styles.profileStatValue}>{deliveredOrders.length}</p>
-                  <p className={styles.profileStatLabel}>Delivered</p>
+                  <p className={styles.profileStatLabel}>{cd.delivered}</p>
                 </div>
                 <div className={styles.profileStat}>
                   <p className={styles.profileStatValue}>RWF {(totalSpent / 1000).toFixed(0)}K</p>
-                  <p className={styles.profileStatLabel}>Total Spent</p>
+                  <p className={styles.profileStatLabel}>{cd.totalSpent}</p>
                 </div>
               </div>
             </div>
