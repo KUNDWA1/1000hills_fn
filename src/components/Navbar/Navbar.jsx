@@ -9,6 +9,7 @@ import useTheme from '../../utils/useTheme';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { useLang } from '../../utils/LangContext';
+import { useThemeContext } from '../../utils/ThemeContext';
 
 const categoryKeys = [
   { key: 'construction-tools', products: constructionToolsProducts },
@@ -20,7 +21,7 @@ const categoryKeys = [
 export default function Navbar({ activePage, activeCategory, onCategoryChange, onGoHome, cartCount, onCartOpen, onSearch, onLoginSuccess, authOpen, onAuthClose }) {
   const [inputVal, setInputVal] = useState('');
   const [localAuthOpen, setLocalAuthOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeContext();
   const { t } = useLang();
 
   const categories = categoryKeys.map(c => ({ ...c, label: t.categories[c.key] }));
