@@ -173,6 +173,8 @@
   align-items: center;
   gap: 0;
   height: 100%;
+  flex: 1;
+  justify-content: center;
 }
 
 .catBtn {
