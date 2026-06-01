@@ -5,7 +5,6 @@ import { generatorsProducts } from '../../data/Generators & Power_products';
 import { securityProducts } from '../../data/Security & IT_products';
 import { solarProducts } from '../../data/Solar & Energy_products';
 import AuthModal from '../Auth/AuthModal';
-import useTheme from '../../utils/useTheme';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { useLang } from '../../utils/LangContext';
