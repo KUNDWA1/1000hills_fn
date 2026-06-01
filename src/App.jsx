@@ -13,6 +13,7 @@ import VendorSetup from './components/VendorSetup/VendorSetup';
 import VendorPending from './components/VendorSetup/VendorPending';
 import useInactivityLogout from './utils/useInactivityLogout';
 import { setToken, clearToken } from './utils/api';
+import { useLang } from './utils/LangContext';
 
 import { constructionToolsProducts } from './data/ConstructionTools_products';
 import { generatorsProducts } from './data/Generators & Power_products';
@@ -30,14 +31,8 @@ const products = {
 
 const allProducts = Object.values(products).flat();
 
-const categoryMeta = {
-  'construction-tools': { title: 'Construction Tools', sub: 'Professional construction equipment' },
-  'generators-power':   { title: 'Generators & Power', sub: 'Reliable power solutions' },
-  'security-it':        { title: 'Security & IT',      sub: 'Security and technology products' },
-  'solar-energy':       { title: 'Solar & Energy',     sub: 'Clean energy solutions' },
-};
-
 export default function App() {
+  const { t } = useLang();
   const [activePage, setActivePage] = useState('home');
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [authToken, setAuthToken]       = useState(null);
@@ -178,7 +173,7 @@ export default function App() {
       )
     : allItems;
 
-  const meta = categoryMeta[activeCategory];
+  const meta = t.categoryMeta[activeCategory];
 
   // ── Dashboard pages (full-screen, no navbar/footer) ──
   if (activePage === 'vendor-setup') {
@@ -270,7 +265,7 @@ export default function App() {
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Search products..."
+                placeholder={t.searchProducts}
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
               />
@@ -295,7 +290,7 @@ export default function App() {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <p>No products found for &quot;<strong>{categorySearch}</strong>&quot;</p>
-              <button className={styles.clearSearchBtn} onClick={() => setCategorySearch('')}>Clear search</button>
+              <button className={styles.clearSearchBtn} onClick={() => setCategorySearch('')}>{t.clearSearch}</button>
             </div>
           )}
         </main>

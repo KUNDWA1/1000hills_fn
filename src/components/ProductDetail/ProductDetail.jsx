@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './ProductDetail.module.css';
 import { productDetails } from '../../data/productDetails';
+import { useLang } from '../../utils/LangContext';
 
 function formatPrice(n) {
   return 'RWF ' + n.toLocaleString();
@@ -12,6 +13,9 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const { t } = useLang();
+  const p = t.products?.[product.id];
+  const name = p?.name || product.name;
 
   const isLow = product.status === 'LOW STOCK';
   const isOut = product.status === 'OUT OF STOCK';
@@ -35,7 +39,7 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
           {product.category.replace(/-/g, ' ').toUpperCase()}
         </span>
         <button className={styles.backBtn} onClick={onBack}>
-          ← BACK TO CATALOG
+          {t.backToCatalog}
         </button>
       </div>
 
@@ -68,27 +72,31 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
         {/* Info */}
         <div className={styles.info}>
           <p className={styles.brand}>{product.brand}</p>
-          <h1 className={styles.name}>{product.name}</h1>
+          <h1 className={styles.name}>{name}</h1>
 
           {detail.partNumber && (
-            <p className={styles.partNum}>Part # {detail.partNumber}</p>
+            <p className={styles.partNum}>{t.partNumber} {detail.partNumber}</p>
           )}
 
           <div className={styles.pricing}>
             <span className={styles.price}>{formatPrice(product.price)}</span>
             {detail.b2bPrice && (
-              <span className={styles.b2b}>B2B: {formatPrice(detail.b2bPrice)}</span>
+              <span className={styles.b2b}>{t.b2bPrice}: {formatPrice(detail.b2bPrice)}</span>
             )}
           </div>
 
           <p className={`${styles.stockStatus} ${isLow ? styles.stockLow : isOut ? styles.stockOut : styles.stockIn}`}>
-            {isOut ? '✕ Out of stock' : isLow ? `⚠ Low stock (${detail.stock || ''} left)` : `In stock${detail.stock ? ` (${detail.stock} available)` : ''}`}
+            {isOut
+              ? t.stockOut
+              : isLow
+              ? `${t.stockLow} (${detail.stock || ''} ${t.left})`
+              : `${t.stockIn}${detail.stock ? ` (${detail.stock} ${t.available})` : ''}`}
           </p>
 
           {/* Specs */}
           {detail.specs && detail.specs.length > 0 && (
             <div className={styles.specsBox}>
-              <p className={styles.specsTitle}>SPECIFICATIONS</p>
+              <p className={styles.specsTitle}>{t.specifications}</p>
               <table className={styles.specsTable}>
                 <tbody>
                   {detail.specs.map((s) => (
@@ -103,7 +111,7 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
           )}
 
           {detail.warranty && (
-            <p className={styles.warranty}>Warranty: {detail.warranty}</p>
+            <p className={styles.warranty}>{t.warranty}: {detail.warranty}</p>
           )}
 
           {/* Qty + Add */}
@@ -131,7 +139,7 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  ADDED
+                  {t.added}
                 </>
               ) : (
                 <>
@@ -140,7 +148,7 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
                     <line x1="3" y1="6" x2="21" y2="6"/>
                     <path d="M16 10a4 4 0 01-8 0"/>
                   </svg>
-                  ADD TO CART
+                  {t.addToCart}
                 </>
               )}
             </button>
@@ -151,7 +159,7 @@ export default function ProductDetail({ product, allProducts, onBack, onAddToCar
       {/* Related products */}
       {related.length > 0 && (
         <div className={styles.related}>
-          <h2 className={styles.relatedTitle}>RELATED PRODUCTS</h2>
+          <h2 className={styles.relatedTitle}>{t.relatedProducts}</h2>
           <div className={styles.relatedGrid}>
             {related.map((p) => (
               <button

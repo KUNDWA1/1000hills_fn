@@ -1,5 +1,6 @@
 import styles from './HomePage.module.css';
 import ProductCard from '../ProductCard/ProductCard';
+import { useLang } from '../../utils/LangContext';
 
 import { constructionToolsProducts } from '../../data/ConstructionTools_products';
 import { generatorsProducts } from '../../data/Generators & Power_products';
@@ -134,29 +135,24 @@ export default function HomePage({
   onAddToCart,
   onProductClick,
 }) {
+  const { t } = useLang();
   return (
     <div className={styles.page}>
       {/* ── HERO ── */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <p className={styles.heroEyebrow}>
-            Building the future of Rwanda
+            {t.buildingFuture}
           </p>
 
           <h1 className={styles.heroTitle}>
-            Building
-            <br />
-            with
-            <br />
-            precision.
+            {t.buildingWith.split('\n').map((line, i) => (
+              <span key={i}>{line}<br /></span>
+            ))}
           </h1>
 
           <p className={styles.heroDesc}>
-            Premier engineering solutions across
-            construction tools,
-            <br />
-            MEP design, IT infrastructure, and
-            sustainable energy systems.
+            {t.heroDesc}
           </p>
 
           <div className={styles.heroBtns}>
@@ -165,12 +161,10 @@ export default function HomePage({
               onClick={() =>
                 document
                   .getElementById('featured-products')
-                  ?.scrollIntoView({
-                    behavior: 'smooth',
-                  })
+                  ?.scrollIntoView({ behavior: 'smooth' })
               }
             >
-              View inventory
+              {t.viewInventory}
             </button>
 
             <button
@@ -178,12 +172,10 @@ export default function HomePage({
               onClick={() =>
                 document
                   .getElementById('operation-hubs')
-                  ?.scrollIntoView({
-                    behavior: 'smooth',
-                  })
+                  ?.scrollIntoView({ behavior: 'smooth' })
               }
             >
-              Consultancy services
+              {t.consultancy}
             </button>
           </div>
         </div>
@@ -197,11 +189,11 @@ export default function HomePage({
         <div className={styles.container}>
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>
-              Operation Hubs
+              {t.operationHubs}
             </h2>
 
             <button className={styles.allDepts}>
-              All departments →
+              {t.allDepartments}
             </button>
           </div>
 
@@ -239,7 +231,7 @@ export default function HomePage({
         <div className={styles.container}>
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>
-              High Precision Supply
+              {t.highPrecision}
             </h2>
           </div>
 

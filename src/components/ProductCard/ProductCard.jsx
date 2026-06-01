@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './ProductCard.module.css';
+import { useLang } from '../../utils/LangContext';
 
 function formatPrice(n) {
   return 'RWF ' + n.toLocaleString();
@@ -8,6 +9,10 @@ function formatPrice(n) {
 export default function ProductCard({ product, onAddToCart, onProductClick }) {
   const [added, setAdded] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { t } = useLang();
+  const p = t.products?.[product.id];
+  const name = p?.name || product.name;
+  const desc = p?.desc || product.description;
 
   function handleAdd(e) {
     e.stopPropagation();
@@ -49,14 +54,14 @@ export default function ProductCard({ product, onAddToCart, onProductClick }) {
         <div className={styles.topRow}>
           <span className={styles.brand}>{product.brand}</span>
           <span className={`${styles.status} ${isLow ? styles.statusLow : isOut ? styles.statusOut : styles.statusIn}`}>
-            {isLow ? '⚠ LOW STOCK' : isOut ? '✕ OUT OF STOCK' : '● IN STOCK'}
+            {isLow ? t.lowStock : isOut ? t.outOfStock : t.inStock}
           </span>
         </div>
 
-        <h3 className={styles.name}>{product.name}</h3>
+        <h3 className={styles.name}>{name}</h3>
 
         {product.description && (
-          <p className={styles.desc}>{product.description}</p>
+          <p className={styles.desc}>{desc}</p>
         )}
 
         <div className={styles.footer}>

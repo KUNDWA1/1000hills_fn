@@ -1,11 +1,9 @@
 import styles from './SearchPage.module.css';
 import ProductCard from '../ProductCard/ProductCard';
-
-function formatCount(n) {
-  return `${n} item${n !== 1 ? 's' : ''} found`;
-}
+import { useLang } from '../../utils/LangContext';
 
 export default function SearchPage({ query, allProducts, onAddToCart, onProductClick }) {
+  const { t } = useLang();
   const q = query.trim().toLowerCase();
 
   const results = q
@@ -21,16 +19,16 @@ export default function SearchPage({ query, allProducts, onAddToCart, onProductC
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <p className={styles.eyebrow}>Catalog Search</p>
-        <h1 className={styles.title}>Results for "{query}"</h1>
-        <p className={styles.sub}>Browse every matching part from the storefront catalog.</p>
+        <p className={styles.eyebrow}>{t.catalogSearch}</p>
+        <h1 className={styles.title}>{t.resultsFor} "{query}"</h1>
+        <p className={styles.sub}>{t.browseCatalog}</p>
 
         <div className={styles.resultsHeader}>
-          <p className={styles.resultsLabel}>Results</p>
+          <p className={styles.resultsLabel}>{t.results}</p>
           <p className={styles.resultsCount}>
-            Showing matches for <strong>"{query}"</strong>
+            {t.showingMatches} <strong>"{query}"</strong>
           </p>
-          <p className={styles.itemCount}>{formatCount(results.length)}</p>
+          <p className={styles.itemCount}>{t.itemsFound(results.length)}</p>
         </div>
 
         {results.length > 0 ? (
@@ -56,7 +54,7 @@ export default function SearchPage({ query, allProducts, onAddToCart, onProductC
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <p>No products found for "<strong>{query}</strong>"</p>
-            <p className={styles.emptySub}>Try a different keyword, brand, or category.</p>
+            <p className={styles.emptySub}>{t.tryDifferent}</p>
           </div>
         )}
       </div>

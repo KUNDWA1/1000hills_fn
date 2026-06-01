@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './Cart.module.css';
 import { api } from '../../utils/api';
+import { useLang } from '../../utils/LangContext';
 
 function formatPrice(n) {
   return 'RWF ' + n.toLocaleString();
@@ -10,6 +11,7 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const count = items.reduce((s, i) => s + i.qty, 0);
   const [loading, setLoading] = useState(false);
+  const { t } = useLang();
 
   const handlePlaceOrder = async () => {
     if (!loggedInUser) {
@@ -29,7 +31,7 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
       });
       items.forEach(i => onRemove(i.id));
       onClose();
-      alert('Order placed! Admin will review and assign a vendor.');
+      alert(t.orderPlaced);
     } catch (err) {
       alert('Failed to place order: ' + err.message);
     } finally {
@@ -43,7 +45,7 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
       <aside className={`${styles.drawer} ${isOpen ? styles.open : ''}`}>
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <h2 className={styles.title}>CART</h2>
+            <h2 className={styles.title}>{t.cart}</h2>
             {count > 0 && <span className={styles.count}>{count} item{count !== 1 ? 's' : ''}</span>}
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
@@ -60,8 +62,8 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
               </svg>
-              <p>Your cart is empty</p>
-              <span>Browse our catalogue and add items</span>
+              <p>{t.cartEmpty}</p>
+              <span>{t.cartEmptyDesc}</span>
             </div>
           ) : (
             <ul className={styles.list}>
@@ -98,16 +100,16 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
         {items.length > 0 && (
           <div className={styles.footer}>
             <div className={styles.totalRow}>
-              <span className={styles.totalLabel}>TOTAL</span>
+              <span className={styles.totalLabel}>{t.total}</span>
               <span className={styles.totalPrice}>{formatPrice(total)}</span>
             </div>
             <button className={styles.checkoutBtn} onClick={handlePlaceOrder} disabled={loading}>
-              {loading ? 'PLACING ORDER...' : 'PLACE ORDER'}
+              {loading ? t.placingOrder : t.placeOrder}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
               </svg>
             </button>
-            <button className={styles.clearBtn} onClick={() => items.forEach(i => onRemove(i.id))}>Clear cart</button>
+            <button className={styles.clearBtn} onClick={() => items.forEach(i => onRemove(i.id))}>{t.clearCart}</button>
           </div>
         )}
       </aside>

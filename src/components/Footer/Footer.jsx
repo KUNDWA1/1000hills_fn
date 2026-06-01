@@ -1,25 +1,16 @@
 import styles from './Footer.module.css';
+import { useLang } from '../../utils/LangContext';
 
-const categories = [
-  {
-    key: 'construction-tools',
-    label: 'Construction Tools',
-  },
-  {
-    key: 'generators-power',
-    label: 'Generators & Power',
-  },
-  {
-    key: 'security-it',
-    label: 'Security & IT',
-  },
-  {
-    key: 'solar-energy',
-    label: 'Solar & Energy',
-  },
+const categoryKeys = [
+  { key: 'construction-tools' },
+  { key: 'generators-power' },
+  { key: 'security-it' },
+  { key: 'solar-energy' },
 ];
 
 export default function Footer({ onCategoryChange }) {
+  const { t } = useLang();
+  const categories = categoryKeys.map(c => ({ ...c, label: t.categories[c.key] }));
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
@@ -32,15 +23,13 @@ export default function Footer({ onCategoryChange }) {
           </div>
 
           <p className={styles.tagline}>
-            Engineering-led sourcing for projects that need
-            <br />
-            reliability, technical depth, and long-term support.
+            {t.footerTagline}
           </p>
         </div>
 
         <div className={styles.links}>
           <div className={styles.linkGroup}>
-            <h4 className={styles.groupTitle}>DEPARTMENTS</h4>
+            <h4 className={styles.groupTitle}>{t.departments}</h4>
 
             <ul>
               {categories.map((cat) => (
@@ -57,7 +46,7 @@ export default function Footer({ onCategoryChange }) {
           </div>
 
           <div className={styles.linkGroup}>
-            <h4 className={styles.groupTitle}>CONTACT</h4>
+            <h4 className={styles.groupTitle}>{t.contact}</h4>
 
             <ul>
               <li>
@@ -90,21 +79,13 @@ export default function Footer({ onCategoryChange }) {
 
       <div className={styles.bottom}>
         <nav className={styles.bottomNav}>
-          <button className={styles.bottomLink}>
-            Inventory
-          </button>
-
-          <button className={styles.bottomLink}>
-            Departments
-          </button>
-
-          <button className={styles.bottomLink}>
-            Support
-          </button>
+          <button className={styles.bottomLink}>{t.footerInventory}</button>
+          <button className={styles.bottomLink}>{t.footerDepartments}</button>
+          <button className={styles.bottomLink}>{t.footerSupport}</button>
         </nav>
 
         <span className={styles.copy}>
-          © 2026 1000 Hills Engineering. All rights reserved.
+          {t.footerCopy}
         </span>
       </div>
     </footer>

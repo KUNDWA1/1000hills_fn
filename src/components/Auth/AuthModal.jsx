@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './AuthModal.module.css';
+import { useLang } from '../../utils/LangContext';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -11,6 +12,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const { t } = useLang();
 
   if (!isOpen) return null;
 
@@ -35,7 +37,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || 'Invalid email or password.');
+        setError(data.message || t.invalidCredentials);
         return;
       }
       onClose();
@@ -45,7 +47,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         profileStatus: data.profileStatus?.toLowerCase(),
       });
     } catch {
-      setError('Cannot connect to server. Make sure the backend is running.');
+      setError(t.serverError);
     } finally {
       setLoading(false);
     }
@@ -68,12 +70,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || 'Registration failed. Please try again.');
+        setError(data.message || t.invalidCredentials);
         return;
       }
       setView('success');
     } catch {
-      setError('Cannot connect to server. Make sure the backend is running.');
+      setError(t.serverError);
     } finally {
       setLoading(false);
     }
@@ -87,9 +89,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   };
 
   const roles = [
-    { value: 'customer', label: 'Customer', icon: '🛒', desc: 'Browse & purchase products' },
-    { value: 'vendor',   label: 'Vendor',   icon: '🏭', desc: 'Sell & manage your products' },
-    { value: 'admin',    label: 'Admin',     icon: '⚙️', desc: 'Manage the platform' },
+    { value: 'customer', label: t.customer, icon: '🛒', desc: t.customerDesc },
+    { value: 'vendor',   label: t.vendor,   icon: '🏭', desc: t.vendorDesc },
+    { value: 'admin',    label: t.admin,    icon: '⚙️', desc: t.adminDesc },
   ];
 
   return createPortal(
@@ -102,11 +104,11 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         {view === 'success' && (
           <>
             <div className={styles.successIcon}>✓</div>
-            <h2 className={styles.title}>Account Created!</h2>
-            <p className={styles.subtitle}>Your account has been created successfully</p>
-            <p className={styles.successMsg}>Welcome to 1000 Hills Engineering! You can now sign in.</p>
+            <h2 className={styles.title}>{t.accountCreated}</h2>
+            <p className={styles.subtitle}>{t.accountCreatedMsg}</p>
+            <p className={styles.successMsg}>{t.welcomeMsg}</p>
             <button className={styles.primaryBtn} onClick={() => switchTo('signin')}>
-              Go to Sign In
+              {t.goToSignIn}
             </button>
           </>
         )}
@@ -114,35 +116,35 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         {/* ── SIGN IN VIEW ── */}
         {view === 'signin' && (
           <>
-            <h2 className={styles.title}>Access Portal</h2>
-            <p className={styles.subtitle}>Sign in with your credentials</p>
+            <h2 className={styles.title}>{t.accessPortal}</h2>
+            <p className={styles.subtitle}>{t.signInCredentials}</p>
 
             {error && <div className={styles.errorMsg}>{error}</div>}
 
             <form onSubmit={handleSignIn}>
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>Email Address</label>
+                <label className={styles.label}>{t.emailAddress}</label>
                 <input className={styles.input} type="email" name="email"
                   value={formData.email} onChange={handleChange}
                   placeholder="your@email.com" required />
               </div>
               <div className={styles.fieldGroup}>
                 <div className={styles.labelRow}>
-                  <label className={styles.label}>Password</label>
-                  <button type="button" className={styles.forgotLink}>Forgot password?</button>
+                  <label className={styles.label}>{t.password}</label>
+                  <button type="button" className={styles.forgotLink}>{t.forgotPassword}</button>
                 </div>
                 <input className={styles.input} type="password" name="password"
                   value={formData.password} onChange={handleChange}
                   placeholder="••••••••••" required />
               </div>
               <button type="submit" className={styles.primaryBtn} disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? t.signingIn : t.signIn}
               </button>
             </form>
 
-            <div className={styles.divider}><span>Don&apos;t have an account?</span></div>
+            <div className={styles.divider}><span>{t.noAccount}</span></div>
             <button className={styles.secondaryBtn} onClick={() => switchTo('signup')}>
-              Create an Account
+              {t.createAccount}
             </button>
           </>
         )}
@@ -150,26 +152,26 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         {/* ── SIGN UP VIEW ── */}
         {view === 'signup' && (
           <>
-            <h2 className={styles.title}>Create Account</h2>
-            <p className={styles.subtitle}>Register for a new account</p>
+            <h2 className={styles.title}>{t.createAccount}</h2>
+            <p className={styles.subtitle}>{t.registerAccount}</p>
 
             {error && <div className={styles.errorMsg}>{error}</div>}
 
             <form onSubmit={handleSignUp}>
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>Full Name</label>
+                <label className={styles.label}>{t.fullName}</label>
                 <input className={styles.input} type="text" name="name"
                   value={formData.name} onChange={handleChange}
                   placeholder="Your Full Name" required />
               </div>
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>Email Address</label>
+                <label className={styles.label}>{t.emailAddress}</label>
                 <input className={styles.input} type="email" name="email"
                   value={formData.email} onChange={handleChange}
                   placeholder="your@email.com" required />
               </div>
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>Password</label>
+                <label className={styles.label}>{t.password}</label>
                 <input className={styles.input} type="password" name="password"
                   value={formData.password} onChange={handleChange}
                   placeholder="••••••••••" minLength={6} required />
@@ -177,7 +179,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
               {/* ── ROLE SELECTOR ── */}
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>I am a</label>
+                <label className={styles.label}>{t.iAma}</label>
                 <div className={styles.roleGrid}>
                   {roles.map((r) => (
                     <label
@@ -202,7 +204,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
               <button type="submit" className={styles.primaryBtn} disabled={loading || !agreedToTerms}
                 style={{ opacity: (!agreedToTerms) ? 0.5 : 1 }}>
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading ? t.creatingAccount : t.createAccount}
               </button>
 
               {/* Terms checkbox */}
@@ -210,17 +212,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 <input type="checkbox" id="terms" checked={agreedToTerms}
                   onChange={e => setAgreedToTerms(e.target.checked)} className={styles.termsCheck} />
                 <label htmlFor="terms" className={styles.termsLabel}>
-                  I agree to the{' '}
+                  {t.agreeTerms}{' '}
                   <button type="button" className={styles.termsLink} onClick={() => setShowTerms(true)}>
-                    Terms & Conditions
+                    {t.termsAndConditions}
                   </button>
                 </label>
               </div>
             </form>
 
-            <div className={styles.divider}><span>Already have an account?</span></div>
+            <div className={styles.divider}><span>{t.alreadyAccount}</span></div>
             <button className={styles.secondaryBtn} onClick={() => switchTo('signin')}>
-              Sign In Instead
+              {t.signInInstead}
             </button>
           </>
         )}
@@ -230,7 +232,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         <div className={styles.termsOverlay} onClick={() => setShowTerms(false)}>
           <div className={styles.termsModal} onClick={e => e.stopPropagation()}>
             <div className={styles.termsHeader}>
-              <h2 className={styles.termsTitle}>Terms & Conditions</h2>
+              <h2 className={styles.termsTitle}>{t.termsTitle}</h2>
               <button className={styles.closeBtn} onClick={() => setShowTerms(false)}>✕</button>
             </div>
             <div className={styles.termsBody}>
@@ -316,9 +318,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
               </p>
             </div>
             <div className={styles.termsFooter}>
-              <button className={styles.secondaryBtn} onClick={() => setShowTerms(false)}>Decline</button>
+              <button className={styles.secondaryBtn} onClick={() => setShowTerms(false)}>{t.decline}</button>
               <button className={styles.primaryBtn} style={{ flex: 1 }} onClick={() => { setAgreedToTerms(true); setShowTerms(false); }}>
-                Accept & Continue
+                {t.acceptContinue}
               </button>
             </div>
           </div>

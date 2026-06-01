@@ -7,18 +7,23 @@ import { solarProducts } from '../../data/Solar & Energy_products';
 import AuthModal from '../Auth/AuthModal';
 import useTheme from '../../utils/useTheme';
 import ThemeSelector from './ThemeSelector';
+import LanguageSelector from './LanguageSelector';
+import { useLang } from '../../utils/LangContext';
 
-const categories = [
-  { key: 'construction-tools', label: 'Construction Tools', products: constructionToolsProducts },
-  { key: 'generators-power', label: 'Generators & Power', products: generatorsProducts },
-  { key: 'security-it', label: 'Security & IT', products: securityProducts },
-  { key: 'solar-energy', label: 'Solar & Energy', products: solarProducts },
+const categoryKeys = [
+  { key: 'construction-tools', products: constructionToolsProducts },
+  { key: 'generators-power', products: generatorsProducts },
+  { key: 'security-it', products: securityProducts },
+  { key: 'solar-energy', products: solarProducts },
 ];
 
 export default function Navbar({ activePage, activeCategory, onCategoryChange, onGoHome, cartCount, onCartOpen, onSearch, onLoginSuccess, authOpen, onAuthClose }) {
   const [inputVal, setInputVal] = useState('');
   const [localAuthOpen, setLocalAuthOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { t } = useLang();
+
+  const categories = categoryKeys.map(c => ({ ...c, label: t.categories[c.key] }));
 
   const isAuthOpen = authOpen || localAuthOpen;
   const handleAuthClose = () => { setLocalAuthOpen(false); if (onAuthClose) onAuthClose(); };
@@ -55,13 +60,16 @@ export default function Navbar({ activePage, activeCategory, onCategoryChange, o
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Search inventory"
+                placeholder={t.searchPlaceholder}
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-              <button className={styles.searchBtn} onClick={handleSearch}>SEARCH</button>
+              <button className={styles.searchBtn} onClick={handleSearch}>{t.search}</button>
             </div>
+
+            {/* Language selector */}
+            <LanguageSelector />
 
             {/* Theme selector */}
             <ThemeSelector theme={theme} setTheme={setTheme} />
@@ -107,7 +115,7 @@ export default function Navbar({ activePage, activeCategory, onCategoryChange, o
             ))}
           </nav>
           <a href="tel:+250788500080" className={styles.supportLink}>
-            <span className={styles.supportLabel}>SUPPORT</span>
+            <span className={styles.supportLabel}>{t.support}</span>
             <span className={styles.supportNum}>+250 788 500 080</span>
           </a>
         </div>
