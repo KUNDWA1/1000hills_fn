@@ -59,6 +59,13 @@ const translations = {
     operationHubs: 'Operation Hubs',
     allDepartments: 'All departments →',
     highPrecision: 'High Precision Supply',
+    viewFullInventory: 'View full inventory →',
+    hubs: [
+      { titleKey: 'Construction Tools',      sub: 'Heavy machinery, hand tools, and site equipment.' },
+      { titleKey: 'MEP Design & Supervision', sub: 'Mechanical, HVAC, electrical, and plumbing systems.' },
+      { titleKey: 'IT & Surveillance',        sub: 'Security, networking, and smart monitoring.' },
+      { titleKey: 'Energy & Sustainability',  sub: 'Solar systems, storage, and renewable upgrades.' },
+    ],
     // Terms
     termsTitle: 'Terms & Conditions',
     decline: 'Decline',
@@ -146,7 +153,7 @@ const translations = {
   fr: {
     searchPlaceholder: 'Rechercher dans l\'inventaire',
     search: 'CHERCHER',
-    support: 'SUPPORT',
+    support: 'ASSISTANCE',
     categories: {
       'construction-tools': 'Outils de Construction',
       'generators-power': 'Générateurs & Énergie',
@@ -199,6 +206,13 @@ const translations = {
     operationHubs: 'Centres d\'Opération',
     allDepartments: 'Tous les départements →',
     highPrecision: 'Approvisionnement de Haute Précision',
+    viewFullInventory: 'Voir l\'inventaire complet →',
+    hubs: [
+      { titleKey: 'Outils de Construction',         sub: 'Machines lourdes, outils manuels et équipements de chantier.' },
+      { titleKey: 'Conception MEP & Supervision',   sub: 'Systèmes mécaniques, CVC, électriques et de plomberie.' },
+      { titleKey: 'IT & Surveillance',              sub: 'Sécurité, réseaux et surveillance intelligente.' },
+      { titleKey: 'Énergie & Durabilité',           sub: 'Systèmes solaires, stockage et mises à niveau renouvelables.' },
+    ],
     termsTitle: 'Termes & Conditions',
     decline: 'Refuser',
     acceptContinue: 'Accepter & Continuer',
@@ -331,6 +345,13 @@ const translations = {
     operationHubs: 'Amashami y\'Akazi',
     allDepartments: 'Amashami yose →',
     highPrecision: 'Ibicuruzwa by\'Ubuziranenge Bwo Hejuru',
+    viewFullInventory: 'Reba ibicuruzwa byose →',
+    hubs: [
+      { titleKey: 'Ibikoresho byo Kubaka',          sub: 'Imashini nini, ibikoresho byo gukorana, n\'ibikoresho by\'ahantu h\'akazi.' },
+      { titleKey: 'Imiterere ya MEP & Kugenzura',   sub: 'Sisitemu za mekaniki, HVAC, amashanyarazi na pompe.' },
+      { titleKey: 'IT & Kugenzura',                 sub: 'Umutekano, itumanaho, na gukurikirana by\'ubwenge.' },
+      { titleKey: 'Ingufu & Ibidukikije',           sub: 'Sisitemu z\'izuba, kubika ingufu, n\'iterambere ry\'ingufu zirambye.' },
+    ],
     termsTitle: 'Amategeko & Amabwiriza',
     decline: 'Anga',
     acceptContinue: 'Emera & Komeza',
