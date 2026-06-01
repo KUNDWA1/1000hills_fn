@@ -6,7 +6,7 @@ import ProductDetail from './components/ProductDetail/ProductDetail';
 import SearchPage from './components/SearchPage/SearchPage';
 import Cart from './components/Cart/Cart';
 import Footer from './components/Footer/Footer';
-import WelcomePage from './components/WelcomePage/WelcomePage';
+import CustomerDashboard from './components/CustomerDashboard/CustomerDashboard';
 import VendorDashboard from './components/VendorDashboard/VendorDashboard';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import VendorSetup from './components/VendorSetup/VendorSetup';
@@ -63,6 +63,8 @@ export default function App() {
           if (s === 'approved') setActivePage('vendor');
           else if (s === 'pending') setActivePage('vendor-pending');
           else setActivePage('vendor-setup');
+        } else if (role === 'customer') {
+          setActivePage('customer');
         }
       } else {
         sessionStorage.removeItem('1h_token');
@@ -93,7 +95,7 @@ export default function App() {
     } else if (role === 'admin') {
       setActivePage('admin');
     } else {
-      setActivePage('welcome');
+      setActivePage('customer');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -201,6 +203,10 @@ export default function App() {
     );
   }
 
+  if (activePage === 'customer') {
+    return <CustomerDashboard user={loggedInUser} onGoHome={goHome} onLogout={handleLogout} />;
+  }
+
   if (activePage === 'vendor') {
     return <VendorDashboard user={loggedInUser} onLogout={handleLogout} />;
   }
@@ -223,11 +229,6 @@ export default function App() {
         authOpen={authOpen}
         onAuthClose={() => setAuthOpen(false)}
       />
-
-      {/* ── WELCOME PAGE ── */}
-      {activePage === 'welcome' && (
-        <WelcomePage user={loggedInUser} onGoHome={goHome} onLogout={handleLogout} />
-      )}
 
       {/* ── HOME PAGE ── */}
       {activePage === 'home' && (
@@ -307,7 +308,7 @@ export default function App() {
         />
       )}
 
-      {activePage !== 'welcome' && (
+      {activePage !== 'customer' && (
         <Footer onCategoryChange={goCategory} onGoHome={goHome} />
       )}
 
