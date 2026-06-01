@@ -7,7 +7,7 @@ function formatPrice(n) {
   return 'RWF ' + n.toLocaleString();
 }
 
-export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, loggedInUser, onOpenAuth }) {
+export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, loggedInUser, onOpenAuth, onOrderPlaced }) {
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const count = items.reduce((s, i) => s + i.qty, 0);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,8 @@ export default function Cart({ isOpen, onClose, items, onRemove, onUpdateQty, lo
       });
       items.forEach(i => onRemove(i.id));
       onClose();
-      alert(t.orderPlaced);
+      if (onOrderPlaced) onOrderPlaced();
+      else alert(t.orderPlaced);
     } catch (err) {
       alert('Failed to place order: ' + err.message);
     } finally {

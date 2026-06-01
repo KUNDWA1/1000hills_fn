@@ -319,6 +319,10 @@ export default function App() {
         onRemove={removeFromCart}
         onUpdateQty={updateQty}
         loggedInUser={loggedInUser}
+        onOrderPlaced={() => {
+          setCartOpen(false);
+          if (loggedInUser?.role === 'customer') setActivePage('customer');
+        }}
         onOpenAuth={() => {
           setCartOpen(false);
           setAuthOpen(true);
