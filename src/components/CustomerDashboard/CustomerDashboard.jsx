@@ -12,20 +12,28 @@ const STATUS_LABEL = {
   OUT_FOR_DELIVERY: 'Out for Delivery', DELIVERED: 'Delivered',
 };
 
-export default function CustomerDashboard({ user, onGoHome, onLogout }) {
+export default function CustomerDashboard({ user, onGoHome, onLogout, initialToast }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [profileEdit, setProfileEdit] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: user?.name || '', phone: '', address: '' });
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(initialToast || null);
   const [orderSearch, setOrderSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
   useEffect(() => {
     api.get('/orders/mine').then(setOrders).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (initialToast) {
+      setToast(initialToast);
+      const timer = setTimeout(() => setToast(null), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [initialToast]);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });

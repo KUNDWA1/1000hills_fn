@@ -43,6 +43,7 @@ export default function App() {
   const [cart, setCart]                     = useState([]);
   const [cartOpen, setCartOpen]             = useState(false);
   const [authOpen, setAuthOpen]             = useState(false);
+  const [orderToast, setOrderToast]         = useState(null);
 
   // ── Validate session on load ──
   useEffect(() => {
@@ -204,7 +205,7 @@ export default function App() {
   }
 
   if (activePage === 'customer') {
-    return <CustomerDashboard user={loggedInUser} onGoHome={goHome} onLogout={handleLogout} />;
+    return <CustomerDashboard user={loggedInUser} onGoHome={goHome} onLogout={handleLogout} initialToast={orderToast} />;
   }
 
   if (activePage === 'vendor') {
@@ -321,7 +322,10 @@ export default function App() {
         loggedInUser={loggedInUser}
         onOrderPlaced={() => {
           setCartOpen(false);
-          if (loggedInUser?.role === 'customer') setActivePage('customer');
+          if (loggedInUser?.role === 'customer') {
+            setOrderToast({ msg: '✅ Order placed! We will assign a vendor shortly.', type: 'success' });
+            setActivePage('customer');
+          }
         }}
         onOpenAuth={() => {
           setCartOpen(false);
